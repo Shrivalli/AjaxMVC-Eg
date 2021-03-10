@@ -1,0 +1,67 @@
+﻿@model AjaxExample.Models.Product
+
+@{
+    ViewBag.Title = "ShowCategoryProducts";
+}
+
+<h2>ShowCategoryProducts</h2>
+@using (Html.BeginForm("CategoryChosen", "Products", FormMethod.Get))
+{ 
+    <table cellspacing="2" cellpadding="2">
+        <tr>
+            <td> Category Type: </td>
+            <td> @Html.DropDownList("CategoryType")</td>
+        </tr>
+    </table>
+    <table id="tblProducts" border="1" >
+        <thead>
+            <tr>
+                <th> Product ID </th>
+                <th> Product Name </th>
+                <th> Quanity Per Unit</th>
+                <th> Unit Price </th>
+                <th> Category ID </th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script type="text/Javascript">
+
+    $(document).ready(function () {
+        $("#CategoryType").change(function () {
+            $("#tblProducts tbody tr").remove();
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("GetProducts")',
+                dataType: 'json',
+                data: { id: $("#CategoryType").val() },
+                success: function (data) {
+                    var items = '';
+                    $.each(data, function (i, item) {
+                        var rows = "<tr>"
+                        + "<td>" + item.ProductID + "</td>"
+                             + "<td>" + item.ProductName + "</td>"
+                             + "<td>" + item.QuantityPerUnit + "</td>"
+                             + "<td>" + item.UnitPrice + "</td>"
+                             + "<td>" + item.CategoryId + "</td>"
+                            + "</tr>";
+                        $('#tblProducts tbody').append(rows)
+                    });
+                },
+                error:
+                    function (ex) {
+                        var s = jquery.ParseJSON(response.responseText);
+                        alert("Message: " + s.Message);
+                        alert("Expection Type: " + s.ExceptionType);
+                    }
+            });
+            return false;
+        })
+    });
+
+
+    </script>
+    }
+
